@@ -9,7 +9,9 @@ known_services()
 \value{
 \code{data_frame} (compatible with \code{data.frame}) of results
        with the the short URL TLD in \code{tld} and a regular expression
-       of compatible URLs in \code{regex})
+       of compatible URLs in \code{regex}). Will populate the returned
+       \code{data.frame} with \code{NA} if there are severe issues connecting
+        to the LongURL API.
 }
 \description{
 Retrieve all the URL shortener services known to the 'LongURL' API

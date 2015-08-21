@@ -1,6 +1,9 @@
 # the LongURL api requires the use of a custom user agent
 LONGURL_USER_AGENT <- "longurl-rstats-pkg"
 
+# timeout
+LONGURL_TIMEOUT <- 1.5
+
 # this is the base endpoint for the LongURL API
 LONGURL_ENDPOINT <- "http://api.longurl.org/v2/%s"
 
@@ -9,7 +12,9 @@ LONGURL_ENDPOINT <- "http://api.longurl.org/v2/%s"
 #' @export
 #' @return \code{data_frame} (compatible with \code{data.frame}) of results
 #'        with the the short URL TLD in \code{tld} and a regular expression
-#'        of compatible URLs in \code{regex})
+#'        of compatible URLs in \code{regex}). Will populate the returned
+#'        \code{data.frame} with \code{NA} if there are severe issues connecting
+#'         to the LongURL API.
 #' @examples
 #' short_svcs <- known_services()
 #' head(short_svcs)
@@ -17,8 +22,12 @@ known_services <- function() {
 
   url <- sprintf(LONGURL_ENDPOINT, "services")
 
-  resp <- GET(url, query=list(format="json"),
-              user_agent(LONGURL_USER_AGENT))
+  resp <- tryCatch(GET(url, query=list(format="json"),
+                       user_agent(LONGURL_USER_AGENT),
+                       timeout(LONGURL_TIMEOUT)),
+                   error=function(err) return(NA_character_))
+
+  if (is.na(resp)) return(data.frame(domain=NA_character_, regex=NA_character_))
 
   warn_for_status(resp)
 
@@ -44,11 +53,11 @@ known_services <- function() {
 #'        interactive sesions)
 #' @return \code{data_frame} (compatible with \code{data.frame}) of results
 #'        with the orignial URLs in \code{orig_url} and expanded URLs in
-#'        \code{expanded_url})
+#'        \code{expanded_url}). Will return \code{NA} if
+#'        there are severe issues connecting to the LongURL API.
 #' @export
 #' @examples
 #' test_urls <- c("http://t.co/D4C7aWYIiA",
-#'                "1.usa.gov/1J6GNoW",
 #'                "ift.tt/1L2Llfr")
 #' big_urls <- expand_urls(test_urls)
 #' head(big_urls)
@@ -71,9 +80,13 @@ expand_url <- function(url_to_expand, check=FALSE, warn=TRUE) {
   url <- sprintf(LONGURL_ENDPOINT, "expand")
 
   # use the API
-  resp <- GET(url, query=list(url=url_to_expand,
-                              format="json"),
-              user_agent(LONGURL_USER_AGENT))
+  resp <- tryCatch(GET(url, query=list(url=url_to_expand,
+                                       format="json"),
+                       user_agent(LONGURL_USER_AGENT),
+                       timeout(LONGURL_TIMEOUT)),
+                   error=function(err) { return(NA_character_) })
+
+  if (is.na(resp)) return(NA_character_)
 
   # warn for API errors
   if (warn) warn_for_status(resp)

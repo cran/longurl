@@ -22,7 +22,8 @@ interactive sesions)}
 \value{
 \code{data_frame} (compatible with \code{data.frame}) of results
        with the orignial URLs in \code{orig_url} and expanded URLs in
-       \code{expanded_url})
+       \code{expanded_url}). Will return \code{NA} if
+       there are severe issues connecting to the LongURL API.
 }
 \description{
 Pass in a vector of URLs (ostensibly "short" URLs) and receive
@@ -31,7 +32,6 @@ a \code{data_frame} of the original URLs and expanded URLs via the
 }
 \examples{
 test_urls <- c("http://t.co/D4C7aWYIiA",
-               "1.usa.gov/1J6GNoW",
                "ift.tt/1L2Llfr")
 big_urls <- expand_urls(test_urls)
 head(big_urls)

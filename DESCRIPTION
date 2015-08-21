@@ -1,6 +1,6 @@
 Package: longurl
 Title: Expand Short URLs Using the 'LongURL' API
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person("Bob", "Rudis", email = "bob@rudis.net", role = c("aut", "cre")))
 Description: Interface to the 'LongURL' API to identify known URL shortener services
              and expand vectors of short URLs with optional error checking and
@@ -12,8 +12,8 @@ LazyData: true
 Suggests: testthat
 Imports: httr, dplyr, pbapply
 NeedsCompilation: no
-Packaged: 2015-06-23 19:20:02 UTC; bob
+Packaged: 2015-08-21 00:13:23 UTC; bob
 Author: Bob Rudis [aut, cre]
 Maintainer: Bob Rudis <bob@rudis.net>
 Repository: CRAN
-Date/Publication: 2015-06-24 01:01:38
+Date/Publication: 2015-08-21 07:38:49
