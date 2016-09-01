@@ -1,48 +1,14 @@
 # the LongURL api requires the use of a custom user agent
 LONGURL_USER_AGENT <- "longurl-rstats-pkg"
 
-# timeout
-LONGURL_TIMEOUT <- 1.5
-
 # this is the base endpoint for the LongURL API
-LONGURL_ENDPOINT <- "http://api.longurl.org/v2/%s"
+LONGURL_ENDPOINT <- "http://urlex.org/json/%s"
 
-#' Retrieve all the URL shortener services known to the 'LongURL' API
-#'
-#' @export
-#' @return \code{data_frame} (compatible with \code{data.frame}) of results
-#'        with the the short URL TLD in \code{tld} and a regular expression
-#'        of compatible URLs in \code{regex}). Will populate the returned
-#'        \code{data.frame} with \code{NA} if there are severe issues connecting
-#'         to the LongURL API.
-#' @examples
-#' short_svcs <- known_services()
-#' head(short_svcs)
-known_services <- function() {
-
-  url <- sprintf(LONGURL_ENDPOINT, "services")
-
-  resp <- tryCatch(GET(url, query=list(format="json"),
-                       user_agent(LONGURL_USER_AGENT),
-                       timeout(LONGURL_TIMEOUT)),
-                   error=function(err) return(NA_character_))
-
-  if (is.na(resp)) return(data.frame(domain=NA_character_, regex=NA_character_))
-
-  warn_for_status(resp)
-
-  tmp <- content(resp)
-
-  data_frame(domain=as.vector(sapply(tmp, "[[", "domain", USE.NAMES=FALSE)),
-             regex=as.vector(sapply(tmp, "[[", "regex", USE.NAMES=FALSE)))
-
-}
-
-#' Expand a vector of (short) URLs using the longurl service
+#' Expand a vector of (short) URLs using the URL-Expander service
 #'
 #' Pass in a vector of URLs (ostensibly "short" URLs) and receive
 #' a \code{data_frame} of the original URLs and expanded URLs via the
-#' 'LongURL' service.
+#' 'URL-Expander' service.
 #'
 #' @param urls_to_expand character vector of URLs
 #' @param check run an extra \code{HEAD} request on the expanded URL to determine
@@ -53,11 +19,12 @@ known_services <- function() {
 #'        interactive sesions)
 #' @return \code{data_frame} (compatible with \code{data.frame}) of results
 #'        with the orignial URLs in \code{orig_url} and expanded URLs in
-#'        \code{expanded_url}). Will return \code{NA} if
-#'        there are severe issues connecting to the LongURL API.
+#'        \code{expanded_url})
 #' @export
+#' @note max 10,000 expansions per day
 #' @examples
 #' test_urls <- c("http://t.co/D4C7aWYIiA",
+#'                "1.usa.gov/1J6GNoW",
 #'                "ift.tt/1L2Llfr")
 #' big_urls <- expand_urls(test_urls)
 #' head(big_urls)
@@ -77,33 +44,28 @@ expand_urls <- function(urls_to_expand, check=FALSE, warn=TRUE,
 expand_url <- function(url_to_expand, check=FALSE, warn=TRUE) {
 
   # make the API URL
-  url <- sprintf(LONGURL_ENDPOINT, "expand")
+  url <- sprintf(LONGURL_ENDPOINT, url_to_expand)
 
   # use the API
-  resp <- tryCatch(GET(url, query=list(url=url_to_expand,
-                                       format="json"),
-                       user_agent(LONGURL_USER_AGENT),
-                       timeout(LONGURL_TIMEOUT)),
-                   error=function(err) { return(NA_character_) })
-
-  if (is.na(resp)) return(NA_character_)
+  resp <- httr::GET(url, user_agent(LONGURL_USER_AGENT))
 
   # warn for API errors
-  if (warn) warn_for_status(resp)
+  if (warn) httr::warn_for_status(resp)
 
   # response object
-  tmp <- content(resp)
+  tmp <- httr::content(resp)
+  tmp <- jsonlite::fromJSON(tmp)
 
   # if bad response and/or API long-url not populated kick back NA
-  if ((resp$status != 200) | (!(names(tmp) %in% c("long-url")))) return(NA)
+  if (resp$status != 200) return(NA)
 
   # _expensive_ validity check of expanded URL
   if (check) {
-    chk <- HEAD(url_to_expand)
-    if (warn) warn_for_status(chk)
+    chk <- httr::HEAD(url_to_expand)
+    if (warn) httr::warn_for_status(chk)
     if (chk$status != 200) return(NA)
   }
 
-  return(tmp$`long-url`)
+  return(unlist(tmp, use.names=FALSE))
 
 }
