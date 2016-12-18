@@ -1,10 +1,10 @@
-9a61396b66b64cb2e36260ae1a590c24 *DESCRIPTION
+0b17f86afa355541f6cada6f410bfac3 *DESCRIPTION
 70c52d4fddc047796739d5cd734b706b *LICENSE
-9d46193c7226dc7f6a0bce6ee697bb84 *NAMESPACE
-e973d9ebc1cac15f547a60e3c86ddc8d *NEWS.md
-a4589f7f8112a8ef2b0d0722350080fc *R/longurl-package.r
-22f186ed83546808c852a3da4e084854 *R/longurl.r
-c682054dae2f9b8a4f6bddd93e3fb10c *man/expand_urls.Rd
-26030f78bd68625939569ace667f05ab *man/longurl.Rd
+c28542ce42c90c7ecd9eb1cb762a837c *NAMESPACE
+d16aa67587db47659960e70d7058fb4f *NEWS.md
+049f60a371f6e558e83cda3354dd64bd *R/longurl-package.r
+926c5fd3bcab28f4fd6395762e72932b *R/longurl.r
+67042f3883629034762a363ad9cddb4b *man/expand_urls.Rd
+679d47cdd3a6fdb82cb5b6a45b249ac8 *man/longurl.Rd
 870e6a605818dda2d39b7c4af720e451 *tests/testthat.R
 4375f1f5acd81672844d4139adf158a3 *tests/testthat/test-longurl.R
