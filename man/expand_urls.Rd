@@ -4,8 +4,13 @@
 \alias{expand_urls}
 \title{Expand a vector of (short) URLs using}
 \usage{
-expand_urls(urls_to_expand, warn = TRUE, agent = "longurl-r-package",
-  seconds = 2, .progress = interactive())
+expand_urls(
+  urls_to_expand,
+  warn = TRUE,
+  agent = "longurl-r-package",
+  seconds = 5,
+  .progress = FALSE
+)
 }
 \arguments{
 \item{urls_to_expand}{character vector of URLs}
@@ -13,22 +18,20 @@ expand_urls(urls_to_expand, warn = TRUE, agent = "longurl-r-package",
 \item{warn}{show any warnings (API or otherwise) as messages}
 
 \item{agent}{user agent to use (some sites switchup content based on user agents).
-Defaults to "\code{longurl-r-package}".}
+Defaults to "`longurl-r-package`".}
 
 \item{seconds}{number of seconds to wait for a response until giving up. Cannot be <1ms.}
 
-\item{.progress}{display a progress bar (generally only useful in
-interactive sesions)}
+\item{.progress}{kept for legacy functionality but ignored}
 }
 \value{
-\code{tbl_df} (compatible with \code{data.frame}) of results
-       with the orignial URLs in \code{orig_url}, expanded URLs in
-       \code{expanded_url} and the HTTP \code{status_code} of the expanded URL. Completely
-       invalid URLs result in a \code{NA} value for \code{expanded_url} & \code{status_code}.
+a tibble/data frame with the orignial URLs in `orig_url`, expanded URLs in
+       `expanded_url` and the HTTP `status_code` of the expanded URL. Completely
+       invalid URLs result in a `NA` value for `expanded_url` & `status_code`.
 }
 \description{
 Pass in a vector of URLs (ostensibly "short" URLs) and receive
-a \code{data_frame} of the original URLs and expanded URLs
+a data frame of the original URLs and expanded URLs
 }
 \examples{
 test_urls <- c("http://t.co/D4C7aWYIiA",
@@ -37,4 +40,3 @@ test_urls <- c("http://t.co/D4C7aWYIiA",
 big_urls <- expand_urls(test_urls)
 head(big_urls)
 }
-
